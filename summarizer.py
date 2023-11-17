@@ -33,6 +33,7 @@ def summarize_text(text):
         summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
     except:
         summary = "Error while summarizing"
+        
     return summary
 
 ####################################################################
@@ -43,6 +44,7 @@ def preprocess_text(text):
     # Remove numbers and special characters
     text = re.sub(r'\d+', '', text)
     text = text.translate(str.maketrans('', '', string.punctuation))
+    
     return text
 
 ####################################################################
@@ -67,16 +69,16 @@ def img2text(image_path):
     part3_data = original_image.crop((0, 2 * part_height, width, height))
 
     # Save the three parts as separate images with unique filenames
-    part1_data.save('downloaded/part1.png')
-    part2_data.save('downloaded/part2.png')
-    part3_data.save('downloaded/part3.png')
+    part1_data.save('part1.png')
+    part2_data.save('part2.png')
+    part3_data.save('part3.png')
 
     # Extract text from each part
     custom_config = r'--oem 3 --psm 6 --dpi 300 -l eng'
 
-    text1 = pytesseract.image_to_string('downloaded/part1.png', config=custom_config)
-    text2 = pytesseract.image_to_string('downloaded/part2.png', config=custom_config)
-    text3 = pytesseract.image_to_string('downloaded/part3.png', config=custom_config)
+    text1 = pytesseract.image_to_string('part1.png', config=custom_config)
+    text2 = pytesseract.image_to_string('part2.png', config=custom_config)
+    text3 = pytesseract.image_to_string('part3.png', config=custom_config)
 
     combined_text = text1 + text2 + text3
     
@@ -138,7 +140,7 @@ def audio2text(audio_file):
 ####################################################################
 
 # Define a function to convert video data to audio
-def yt_link2text(youtube_url, output_directory="downloaded", name="xyz"):
+def yt_link2text(youtube_url, name="xyz"):
     # Create a YouTube object
     yt = YouTube(youtube_url)
     
@@ -148,7 +150,7 @@ def yt_link2text(youtube_url, output_directory="downloaded", name="xyz"):
     video_data = requests.get(video_stream.url).content
     # Generate a unique filename for the temporary video file
     temp_file_name = f"{name}" + ".mp4"
-    temp_file_path = f"{output_directory}/{temp_file_name}"
+    temp_file_path = f"{temp_file_name}"
     # Write video data to the temporary video file
     
     with open(temp_file_path, "wb") as temp_file:
@@ -157,7 +159,7 @@ def yt_link2text(youtube_url, output_directory="downloaded", name="xyz"):
     video_clip = VideoFileClip(temp_file_path)
     # Generate a unique filename for the audio file
     audio_file_name = f"{name}" + ".wav"
-    audio_file_path = f"{output_directory}/{audio_file_name}"
+    audio_file_path = f"{audio_file_name}"
     # Save the audio as a WAV file in the output directory
     video_clip.audio.write_audiofile(audio_file_path)
     # Close the video clip
@@ -169,7 +171,7 @@ def yt_link2text(youtube_url, output_directory="downloaded", name="xyz"):
 
 ####################################################################
 
-def video2text(video_file, output_audio_file = "downloaded/vid2aud.wav"):
+def video2text(video_file, output_audio_file = "vid2aud.wav"):
     video_clip = VideoFileClip(video_file)
     audio_clip = video_clip.audio
     audio_clip.write_audiofile(output_audio_file, codec='pcm_s16le')
